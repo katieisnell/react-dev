@@ -17,10 +17,10 @@ class App extends React.Component {
   }
 
   render() {
-    let txt = this.props.txt
+    // let txt = this.props.txt
     return (
       <div>
-        <h1>{this.state.txt}</h1>
+        <Title text='My Title'/>
         <Widget update={this.update.bind(this)}/>
         <Button>I <Heart/> React</Button>
       </div>
@@ -34,6 +34,10 @@ class Heart extends React.Component {
   }
 }
 
+const Title = (props) => {
+  return <h1>{props.text}</h1>
+}
+
 const Widget = (props) => {
   return <input type="text" onChange={props.update} />
 }
@@ -44,11 +48,23 @@ const Button = (props) => {
 
 App.propTypes = {
   txt: PropTypes.string,
-  cat: PropTypes.number.isRequired
+  // cat: PropTypes.number.isRequired // Will show the error in the console
 }
 
 App.defaultProps = {
   txt: "This is the default txt"
+}
+
+Title.propTypes = {
+  text(props, propName, component){
+    if (!(propName in props)) {
+      return new Error(`Missing ${propName}`) // Will throw an error in the console
+    } else {
+      if (props[propName].length < 6) {
+        return new Error(`${propName} is too short, must be bigger than 5 characters`) // Will throw an error in the console
+      }
+    }
+  }
 }
 
 export default App
