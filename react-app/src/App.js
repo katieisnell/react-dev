@@ -12,7 +12,8 @@ class App extends React.Component {
       a: '',
       b: '',
       c: '',
-      d: ''
+      d: '',
+      val: 0
     }
     this.update = this.update.bind(this)
   }
@@ -24,11 +25,26 @@ class App extends React.Component {
       a: this.refs.a.value,
       b: this.b.value,
       c: ReactDOM.findDOMNode(this.c).value,
-      d: this.d.refs.input.value
+      d: this.d.refs.input.value,
+      val: this.state.val + 1
     })
   }
 
+  componentWillMount() {
+    console.log('App componentWillMount()'); // Shows just before render and it is ensured the component will mount 
+  }
+
+  componentDidMount() {
+    console.log('App componentDidMount()'); // Shows just after render when the component rendered safely
+  }
+
+  componentWillUnmount() {
+    console.log('App componentWillUnmount()'); // Shows just after the component has unmounted
+
+  }
+
   render() {
+    console.log('App render()');
     // let txt = this.props.txt
     return (
       <div>
@@ -79,11 +95,8 @@ class App extends React.Component {
             update={this.update.bind(this)}
           /> {this.state.d}
         </div>
-
-
-
-
         <hr/>
+        <button onClick={this.update}>{this.state.val}</button>
       </div>
     )
   }
@@ -104,6 +117,25 @@ class Input extends React.Component {
 class InputDiv extends React.Component {
   render() {
     return <div><input ref='input' type='text' onChange={this.props.update}/></div>
+  }
+}
+
+class Wrapper extends React.Component {
+  mount() {
+    ReactDOM.render(<App />, document.getElementById('app'))
+  }
+
+  unmount() {
+    ReactDOM.unmountComponentAtNode(document.getElementById('app'))
+  }
+  render() {
+    return (
+      <div>
+        <button onClick={this.mount.bind(this)}>Mount</button>
+        <button onClick={this.unmount.bind(this)}>Unmount</button>
+        <div id='app'></div>
+      </div>
+    )
   }
 }
 
@@ -140,4 +172,4 @@ Title.propTypes = {
   }
 }
 
-export default App
+export default Wrapper
