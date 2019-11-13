@@ -13,7 +13,8 @@ class App extends React.Component {
       b: '',
       c: '',
       d: '',
-      val: 0
+      val: 0,
+      items: []
     }
     this.update = this.update.bind(this)
   }
@@ -30,27 +31,35 @@ class App extends React.Component {
     })
   }
 
-  componentWillMount() {
-    console.log('App componentWillMount()'); // Shows just before render and it is ensured the component will mount 
-    this.setState({
-      m: 2 // Demonstrating we can intercept the state before rendering
-    })
-  }
-
   componentDidMount() {
     console.log('App componentDidMount()'); // Shows just after render when the component rendered safely
     console.log('App ' + ReactDOM.findDOMNode(this));
-    this.inc = setInterval(this.update, 500);
+    // this.inc = setInterval(this.update, 500);
+
+    fetch('https://swapi.co/api/people/?format=json')
+      .then(response => response.json())
+      .then(({ results: items }) => this.setState({ items }));
   }
 
   componentWillUnmount() {
     console.log('App componentWillUnmount()'); // Shows just after the component has unmounted
-    clearInterval(this.inc); // Make sure to clean up
+    // clearInterval(this.inc); // Make sure to clean up
+  }
+
+  filter(e) {
+    this.setState({
+      filter: e.target.value
+    });
   }
 
   render() {
     console.log('App render()');
     // let txt = this.props.txt
+
+    let items = this.state.items;
+    if (this.state.filter) {
+      items = items.filter(item => item.name.toLowerCase().includes(this.state.filter.toLowerCase()))
+    }
     return (
       <div>
         <Title text='My Title'/>
@@ -101,7 +110,13 @@ class App extends React.Component {
           /> {this.state.d}
         </div>
         <hr/>
-        <button onClick={this.update}>{this.state.val * this.state.m}</button>
+        <button onClick={this.update}>{this.state.val}</button>
+        <hr/>
+        <input type='text' onChange={this.filter.bind(this)}/>
+        <div>
+          {items.map( item => <Person key={item.name} person={item}/>)}
+        </div>
+        <hr/>
       </div>
     )
   }
@@ -125,25 +140,6 @@ class InputDiv extends React.Component {
   }
 }
 
-class Wrapper extends React.Component {
-  mount() {
-    ReactDOM.render(<App />, document.getElementById('app'))
-  }
-
-  unmount() {
-    ReactDOM.unmountComponentAtNode(document.getElementById('app'))
-  }
-  render() {
-    return (
-      <div>
-        <button onClick={this.mount.bind(this)}>Mount</button>
-        <button onClick={this.unmount.bind(this)}>Unmount</button>
-        <div id='app'></div>
-      </div>
-    )
-  }
-}
-
 const Title = (props) => {
   return <h1>{props.text}</h1>
 }
@@ -154,6 +150,10 @@ const Widget = (props) => {
 
 const Button = (props) => {
   return <button>{props.children}</button>
+}
+
+const Person = (props) => {
+  return <h4>{props.person.name}</h4>
 }
 
 App.propTypes = {
@@ -177,4 +177,4 @@ Title.propTypes = {
   }
 }
 
-export default Wrapper
+export default App
