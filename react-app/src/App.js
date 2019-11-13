@@ -32,15 +32,20 @@ class App extends React.Component {
 
   componentWillMount() {
     console.log('App componentWillMount()'); // Shows just before render and it is ensured the component will mount 
+    this.setState({
+      m: 2 // Demonstrating we can intercept the state before rendering
+    })
   }
 
   componentDidMount() {
     console.log('App componentDidMount()'); // Shows just after render when the component rendered safely
+    console.log('App ' + ReactDOM.findDOMNode(this));
+    this.inc = setInterval(this.update, 500);
   }
 
   componentWillUnmount() {
     console.log('App componentWillUnmount()'); // Shows just after the component has unmounted
-
+    clearInterval(this.inc); // Make sure to clean up
   }
 
   render() {
@@ -96,7 +101,7 @@ class App extends React.Component {
           /> {this.state.d}
         </div>
         <hr/>
-        <button onClick={this.update}>{this.state.val}</button>
+        <button onClick={this.update}>{this.state.val * this.state.m}</button>
       </div>
     )
   }
