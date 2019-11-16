@@ -1,7 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+
+const HOC = (InnerComponent) => class extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0
+    }
+  }
+
+  update() {
+    this.setState({
+      count: this.state.count + 1
+    })
+  }
+  componentDidMount() {
+    console.log('HOC componentDidMount()');
+  }
+
+  render() {
+    return (
+      <InnerComponent
+        {...this.props} // Need this to pass the props through to the component
+        {...this.state}
+        update={this.update.bind(this)}
+      />
+    )
+  }
+}
 
 class App extends React.Component {
   constructor() {
@@ -117,6 +145,11 @@ class App extends React.Component {
           {items.map( item => <Person key={item.name} person={item}/>)}
         </div>
         <hr/>
+        <div>
+          <Button>Button</Button>
+          <br/>
+          <LabelHOC>Label</LabelHOC>
+        </div>
       </div>
     )
   }
@@ -140,6 +173,18 @@ class InputDiv extends React.Component {
   }
 }
 
+class Label extends React.Component {
+  componentDidMount() {
+    console.log('Label componentDidMount()');
+  }
+
+  render() {
+    return <label onMouseMove={this.props.update}>{this.props.children} ({this.props.count})</label>
+  }
+}
+
+const LabelHOC = HOC(Label);
+
 const Title = (props) => {
   return <h1>{props.text}</h1>
 }
@@ -148,9 +193,9 @@ const Widget = (props) => {
   return <input type="text" onChange={props.update} />
 }
 
-const Button = (props) => {
-  return <button>{props.children}</button>
-}
+const Button = HOC((props) => {
+  return <button onClick={props.update}>{props.children} ({props.count})</button>
+})
 
 const Person = (props) => {
   return <h4>{props.person.name}</h4>
