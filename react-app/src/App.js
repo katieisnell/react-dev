@@ -15,28 +15,43 @@ class App extends React.Component {
   render() {
     console.log('App render()');
     return (
-      <Parent>
-        <div className='childA'></div>
-        <div className='childB'></div>
-      </Parent>
+      <Buttons>
+        <button value='A'>A</button>
+        <button value='B'>B</button>
+        <button value='C'>C</button>
+      </Buttons>
     )
   }
 }
 
-class Parent extends React.Component {
-  render() {
-    console.log(this.props.children);
-    let children = this.props.children.map(child => child); // Throws an error if we have <= 1 child
-
-    /* Below are different ways to map the children and check some information about them */
-    // let children = React.Children.map(this.props.children, child => child);
-    // let children = React.Children.toArray(this.props.children);
-    // let children = React.Children.forEach(this.props.children, child => console.log(child.props.className)); 
-    // let children = React.Children.only(this.props.children); // Throws an error if we have more than 1 child
-    
-    console.log(children);
-    return null;
+class Buttons extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      selected: 'None'
+    }
   }
+
+  selectItem(selected) {
+    this.setState({
+      selected
+    })
+  }
+
+  render() {
+    let fn = child => React.cloneElement(child, {
+      onClick: this.selectItem.bind(this, child.props.value)
+    });
+    let items = React.Children.map(this.props.children, fn);
+    return (
+      <div>
+        <h1>You have selected {this.state.selected}</h1>
+        {items}
+      </div>
+    )
+  }
+
+
 }
 
 export default App
