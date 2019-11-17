@@ -1,33 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import './App.css'
-
 class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      input: '/* Add your JSX here */',
-      output: '',
-      error: ''
-    }
-    this.update = this.update.bind(this)
-  }
-
-  update( e ) {
-    let code = e.target.value;
-    try {
-      this.setState({
-        output: window.Babel
-          .transform(code, { presets: ['es2015', 'react']})
-          .code, err: ''
-      })
-    } catch (err) {
-      this.setState({
-        err: err.message
-      })
-    }
-  }
 
   componentDidMount() {
     console.log('App componentDidMount()'); // Shows just after render when the component rendered safely
@@ -41,18 +15,27 @@ class App extends React.Component {
   render() {
     console.log('App render()');
     return (
-      <div>
-        <header>{this.state.err}</header>
-        <div className='container'>
-          <textarea 
-            onChange={this.update.bind(this)}
-            defaultValue={this.state.input}/>
-            <pre>
-              {this.state.output}
-            </pre>
-        </div>
-      </div>
+      <Parent>
+        <div className='childA'></div>
+        <div className='childB'></div>
+      </Parent>
     )
+  }
+}
+
+class Parent extends React.Component {
+  render() {
+    console.log(this.props.children);
+    let children = this.props.children.map(child => child); // Throws an error if we have <= 1 child
+
+    /* Below are different ways to map the children and check some information about them */
+    // let children = React.Children.map(this.props.children, child => child);
+    // let children = React.Children.toArray(this.props.children);
+    // let children = React.Children.forEach(this.props.children, child => console.log(child.props.className)); 
+    // let children = React.Children.only(this.props.children); // Throws an error if we have more than 1 child
+    
+    console.log(children);
+    return null;
   }
 }
 
